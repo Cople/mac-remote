@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f6f5f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Mac Remote">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+  <title>Mac Remote</title>
+</head>
+<body>
+  <!-- Remix Icon 4.6.0, Apache-2.0. SVG paths combined into a local sprite. -->
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <clipPath id="pad-sector-up" clipPathUnits="objectBoundingBox"><path d="M .146447 .146447 A .5 .5 0 0 1 .853553 .146447 L .633565 .366435 A .188889 .188889 0 0 0 .366435 .366435 Z"/></clipPath>
+      <clipPath id="pad-sector-right" clipPathUnits="objectBoundingBox"><path transform="rotate(90 .5 .5)" d="M .146447 .146447 A .5 .5 0 0 1 .853553 .146447 L .633565 .366435 A .188889 .188889 0 0 0 .366435 .366435 Z"/></clipPath>
+      <clipPath id="pad-sector-down" clipPathUnits="objectBoundingBox"><path transform="rotate(180 .5 .5)" d="M .146447 .146447 A .5 .5 0 0 1 .853553 .146447 L .633565 .366435 A .188889 .188889 0 0 0 .366435 .366435 Z"/></clipPath>
+      <clipPath id="pad-sector-left" clipPathUnits="objectBoundingBox"><path transform="rotate(270 .5 .5)" d="M .146447 .146447 A .5 .5 0 0 1 .853553 .146447 L .633565 .366435 A .188889 .188889 0 0 0 .366435 .366435 Z"/></clipPath>
+    </defs>
+    <symbol id="i-remote" data-remixicon="remote-control-line" viewBox="0 0 24 24"><path d="M17.0001 12C17.5524 12 18.0001 12.4477 18.0001 13V22H16.0001V14H8.00015V22H6.00015V13C6.00015 12.4477 6.44786 12 7.00015 12H17.0001ZM12.0001 16V18H10.0001V16H12.0001ZM12.0001 6C14.3491 6 16.3827 7.34978 17.3678 9.31602L15.5787 10.2108C14.922 8.89991 13.5662 8 12.0001 8C10.4341 8 9.07833 8.89991 8.42163 10.2108L6.63247 9.31602C7.61755 7.34978 9.65122 6 12.0001 6ZM12.0001 2C15.9153 2 19.3049 4.24991 20.9466 7.5273L19.1576 8.42242C17.8443 5.80019 15.1325 4 12.0001 4C8.86783 4 6.15596 5.80019 4.84271 8.42242L3.05371 7.5273C4.69541 4.24991 8.08503 2 12.0001 2Z"/></symbol>
+    <symbol id="i-monitor" data-remixicon="computer-fill" viewBox="0 0 24 24"><path d="M13 18V20H17V22H7V20H11V18H2.9918C2.44405 18 2 17.5511 2 16.9925V4.00748C2 3.45107 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44892 22 4.00748V16.9925C22 17.5489 21.5447 18 21.0082 18H13Z"/></symbol>
+    <symbol id="i-play" data-remixicon="play-fill" viewBox="0 0 24 24"><path d="M19.376 12.4161L8.77735 19.4818C8.54759 19.635 8.23715 19.5729 8.08397 19.3432C8.02922 19.261 8 19.1645 8 19.0658V4.93433C8 4.65818 8.22386 4.43433 8.5 4.43433C8.59871 4.43433 8.69522 4.46355 8.77735 4.5183L19.376 11.584C19.6057 11.7372 19.6678 12.0477 19.5146 12.2774C19.478 12.3323 19.4309 12.3795 19.376 12.4161Z"/></symbol>
+    <symbol id="i-back" data-remixicon="rewind-fill" viewBox="0 0 24 24"><path d="M12 10.6667L21.2227 4.51823C21.4524 4.36506 21.7629 4.42714 21.9161 4.65691C21.9708 4.73904 22 4.83554 22 4.93426V19.0657C22 19.3419 21.7762 19.5657 21.5 19.5657C21.4013 19.5657 21.3048 19.5365 21.2227 19.4818L12 13.3333V19.0657C12 19.3419 11.7762 19.5657 11.5 19.5657C11.4013 19.5657 11.3048 19.5365 11.2227 19.4818L0.62407 12.416C0.394306 12.2628 0.332219 11.9524 0.485395 11.7226C0.522013 11.6677 0.569144 11.6206 0.62407 11.584L11.2227 4.51823C11.4524 4.36506 11.7629 4.42714 11.9161 4.65691C11.9708 4.73904 12 4.83554 12 4.93426V10.6667Z"/></symbol>
+    <symbol id="i-forward" data-remixicon="speed-fill" viewBox="0 0 24 24"><path d="M12 13.3334L2.77735 19.4818C2.54759 19.635 2.23715 19.5729 2.08397 19.3432C2.02922 19.261 2 19.1645 2 19.0658V4.93433C2 4.65818 2.22386 4.43433 2.5 4.43433C2.59871 4.43433 2.69522 4.46355 2.77735 4.5183L12 10.6667V4.93433C12 4.65818 12.2239 4.43433 12.5 4.43433C12.5987 4.43433 12.6952 4.46355 12.7774 4.5183L23.376 11.584C23.6057 11.7372 23.6678 12.0477 23.5146 12.2774C23.478 12.3323 23.4309 12.3795 23.376 12.4161L12.7774 19.4818C12.5476 19.635 12.2372 19.5729 12.084 19.3432C12.0292 19.261 12 19.1645 12 19.0658V13.3334Z"/></symbol>
+    <symbol id="i-volume" data-remixicon="volume-up-fill" viewBox="0 0 24 24"><path d="M2 16.0001H5.88889L11.1834 20.3319C11.2727 20.405 11.3846 20.4449 11.5 20.4449C11.7761 20.4449 12 20.2211 12 19.9449V4.05519C12 3.93977 11.9601 3.8279 11.887 3.73857C11.7121 3.52485 11.3971 3.49335 11.1834 3.66821L5.88889 8.00007H2C1.44772 8.00007 1 8.44778 1 9.00007V15.0001C1 15.5524 1.44772 16.0001 2 16.0001ZM23 12C23 15.292 21.5539 18.2463 19.2622 20.2622L17.8445 18.8444C19.7758 17.1937 21 14.7398 21 12C21 9.26016 19.7758 6.80629 17.8445 5.15557L19.2622 3.73779C21.5539 5.75368 23 8.70795 23 12ZM18 12C18 10.0883 17.106 8.38548 15.7133 7.28673L14.2842 8.71584C15.3213 9.43855 16 10.64 16 12C16 13.36 15.3213 14.5614 14.2842 15.2841L15.7133 16.7132C17.106 15.6145 18 13.9116 18 12Z"/></symbol>
+    <symbol id="i-mute" data-remixicon="volume-mute-fill" viewBox="0 0 24 24"><path d="M5.88889 16.0001H2C1.44772 16.0001 1 15.5524 1 15.0001V9.00007C1 8.44778 1.44772 8.00007 2 8.00007H5.88889L11.1834 3.66821C11.3971 3.49335 11.7121 3.52485 11.887 3.73857C11.9601 3.8279 12 3.93977 12 4.05519V19.9449C12 20.2211 11.7761 20.4449 11.5 20.4449C11.3846 20.4449 11.2727 20.405 11.1834 20.3319L5.88889 16.0001ZM20.4142 12.0001L23.9497 15.5356L22.5355 16.9498L19 13.4143L15.4645 16.9498L14.0503 15.5356L17.5858 12.0001L14.0503 8.46454L15.4645 7.05032L19 10.5859L22.5355 7.05032L23.9497 8.46454L20.4142 12.0001Z"/></symbol>
+    <symbol id="i-plus" data-remixicon="add-fill" viewBox="0 0 24 24"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"/></symbol>
+    <symbol id="i-minus" data-remixicon="subtract-fill" viewBox="0 0 24 24"><path d="M19 11H5V13H19V11Z"/></symbol>
+    <symbol id="i-prev" data-remixicon="skip-back-fill" viewBox="0 0 24 24"><path d="M8 11.3333L18.2227 4.51823C18.4524 4.36506 18.7628 4.42714 18.916 4.65691C18.9708 4.73904 19 4.83555 19 4.93426V19.0657C19 19.3419 18.7761 19.5657 18.5 19.5657C18.4013 19.5657 18.3048 19.5365 18.2227 19.4818L8 12.6667V19C8 19.5523 7.55228 20 7 20C6.44772 20 6 19.5523 6 19V5C6 4.44772 6.44772 4 7 4C7.55228 4 8 4.44772 8 5V11.3333Z"/></symbol>
+    <symbol id="i-next" data-remixicon="skip-forward-fill" viewBox="0 0 24 24"><path d="M16 12.6667L5.77735 19.4818C5.54759 19.6349 5.23715 19.5729 5.08397 19.3431C5.02922 19.261 5 19.1645 5 19.0657V4.93426C5 4.65812 5.22386 4.43426 5.5 4.43426C5.59871 4.43426 5.69522 4.46348 5.77735 4.51823L16 11.3333V5C16 4.44772 16.4477 4 17 4C17.5523 4 18 4.44772 18 5V19C18 19.5523 17.5523 20 17 20C16.4477 20 16 19.5523 16 19V12.6667Z"/></symbol>
+    <symbol id="i-full" data-remixicon="fullscreen-fill" viewBox="0 0 24 24"><path d="M16 3H22V9H20V5H16V3ZM2 3H8V5H4V9H2V3ZM20 19V15H22V21H16V19H20ZM4 19H8V21H2V15H4V19Z"/></symbol>
+    <symbol id="i-danmaku" data-remixicon="t-box-line" viewBox="0 0 24 24"><path d="M5 5V19H19V5H5ZM4 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3ZM13 10V17H11V10H7V8H17V10H13Z"/></symbol>
+    <symbol id="i-escape" data-remixicon="fullscreen-exit-line" viewBox="0 0 24 24"><path d="M18 7H22V9H16V3H18V7ZM8 9H2V7H6V3H8V9ZM18 17V21H16V15H22V17H18ZM8 15V21H6V17H2V15H8Z"/></symbol>
+    <symbol id="i-bell" data-remixicon="notification-off-fill" viewBox="0 0 24 24"><path d="M18.5859 20H4.00016C3.72401 20 3.50016 19.7762 3.50016 19.5C3.50016 19.3918 3.53525 19.2866 3.60016 19.2L4.00016 18.6667V10C4.00016 8.67022 4.32462 7.41619 4.8987 6.31279L1.39355 2.80765L2.80777 1.39343L22.6068 21.1924L21.1925 22.6066L18.5859 20ZM20.0002 15.7858L7.55919 3.34486C8.8297 2.49537 10.3571 2.00003 12.0002 2.00003C16.4184 2.00003 20.0002 5.58176 20.0002 10V15.7858ZM9.50016 21H14.5002C14.5002 22.3807 13.3809 23.5 12.0002 23.5C10.6194 23.5 9.50016 22.3807 9.50016 21Z"/></symbol>
+    <symbol id="i-arrow" data-remixicon="arrow-right-s-fill" viewBox="0 0 24 24"><path d="M16 12L10 18V6L16 12Z"/></symbol>
+    <symbol id="i-lock" data-remixicon="lock-fill" viewBox="0 0 24 24"><path d="M19 10H20C20.5523 10 21 10.4477 21 11V21C21 21.5523 20.5523 22 20 22H4C3.44772 22 3 21.5523 3 21V11C3 10.4477 3.44772 10 4 10H5V9C5 5.13401 8.13401 2 12 2C15.866 2 19 5.13401 19 9V10ZM17 10V9C17 6.23858 14.7614 4 12 4C9.23858 4 7 6.23858 7 9V10H17ZM11 14V18H13V14H11Z"/></symbol>
+    <symbol id="i-key" data-remixicon="keyboard-fill" viewBox="0 0 24 24"><path d="M3 17H21V19H3V17ZM3 11H6V14H3V11ZM8 11H11V14H8V11ZM3 5H6V8H3V5ZM13 5H16V8H13V5ZM18 5H21V8H18V5ZM13 11H16V14H13V11ZM18 11H21V14H18V11ZM8 5H11V8H8V5Z"/></symbol>
+    <symbol id="i-links" data-remixicon="links-line" viewBox="0 0 24 24"><path d="M13.0607 8.11097L14.4749 9.52518C17.2086 12.2589 17.2086 16.691 14.4749 19.4247L14.1214 19.7782C11.3877 22.5119 6.95555 22.5119 4.22188 19.7782C1.48821 17.0446 1.48821 12.6124 4.22188 9.87874L5.6361 11.293C3.68348 13.2456 3.68348 16.4114 5.6361 18.364C7.58872 20.3166 10.7545 20.3166 12.7072 18.364L13.0607 18.0105C15.0133 16.0578 15.0133 12.892 13.0607 10.9394L11.6465 9.52518L13.0607 8.11097ZM19.7782 14.1214L18.364 12.7072C20.3166 10.7545 20.3166 7.58872 18.364 5.6361C16.4114 3.68348 13.2456 3.68348 11.293 5.6361L10.9394 5.98965C8.98678 7.94227 8.98678 11.1081 10.9394 13.0607L12.3536 14.4749L10.9394 15.8891L9.52518 14.4749C6.79151 11.7413 6.79151 7.30911 9.52518 4.57544L9.87874 4.22188C12.6124 1.48821 17.0446 1.48821 19.7782 4.22188C22.5119 6.95555 22.5119 11.3877 19.7782 14.1214Z"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Mac Remote 首页">
+        <span class="brand-mark"><svg><use href="#i-remote"/></svg></span>
+        <span>Mac Remote</span>
+      </a>
+      <button class="connection-status" id="connection-status" type="button" title="重新检查连接"><span class="status-dot" aria-hidden="true"></span><span id="connection-label">连接中</span></button>
+    </header>
+
+    <main>
+      <section class="device-card" aria-label="当前连接设备">
+        <span class="device-icon"><img id="frontmost-app-icon" alt="" width="44" height="44" hidden><svg id="app-icon-fallback"><use href="#i-monitor"/></svg></span>
+        <div class="device-info"><p id="device-name">连接中…</p><span id="frontmost-app">—</span></div>
+      </section>
+
+      <div class="permission-banner" id="permission-banner" role="status" hidden><svg><use href="#i-lock"/></svg><p>请在 Mac 菜单栏中授予辅助功能权限</p></div>
+
+      <div class="controls-layout">
+        <section class="panel remote-panel" aria-label="播放遥控器">
+          <div class="mode-switch" role="tablist" aria-label="控制模式">
+            <button id="mode-keyboard" class="mode active" type="button" role="tab" aria-selected="true" aria-controls="remote-controls"><svg><use href="#i-key"/></svg>快捷键</button>
+            <button id="mode-media" class="mode" type="button" role="tab" aria-selected="false" aria-controls="remote-controls" tabindex="-1"><svg><use href="#i-play"/></svg>媒体按键</button>
+          </div>
+
+          <div id="remote-controls" role="tabpanel" aria-labelledby="mode-keyboard">
+            <div class="remote-pad" id="remote-pad">
+              <div class="pad-ring"></div>
+              <button class="pad-button pad-up" id="pad-up" data-control="volume" aria-label="音量增加 10%" disabled><span class="pad-content"><svg><use href="#i-plus"/></svg><span>10%</span></span></button>
+              <button class="pad-button pad-left" id="pad-left" data-control="keyboard" aria-label="快退，发送左箭头" disabled><span class="pad-content"><svg><use id="left-icon" href="#i-back"/></svg><span id="left-label">5 秒</span></span></button>
+              <button class="play-button" id="pad-play" data-control="keyboard" aria-label="播放或暂停" disabled><svg><use href="#i-play"/></svg></button>
+              <button class="pad-button pad-right" id="pad-right" data-control="keyboard" aria-label="快进，长按持续发送右箭头" disabled><span class="pad-content"><svg><use id="right-icon" href="#i-forward"/></svg><span id="right-label">5 秒</span></span></button>
+              <button class="pad-button pad-down" id="pad-down" data-control="volume" aria-label="音量降低 10%" disabled><span class="pad-content"><svg><use href="#i-minus"/></svg><span>10%</span></span></button>
+            </div>
+            <p class="hold-hint" id="hold-hint" title="需要播放器支持按住右箭头倍速"><span id="hold-text">长按倍速</span></p>
+          </div>
+
+          <div class="shortcut-grid" id="shortcut-grid">
+            <button data-key="previous" data-control="keyboard" disabled><svg><use href="#i-prev"/></svg><span>上一个</span><kbd>[</kbd></button>
+            <button data-key="next" data-control="keyboard" disabled><svg><use href="#i-next"/></svg><span>下一个</span><kbd>]</kbd></button>
+            <button data-key="danmaku" data-control="keyboard" disabled><svg><use href="#i-danmaku"/></svg><span>弹幕</span><kbd>D</kbd></button>
+            <button data-key="fullscreen" data-control="keyboard" disabled><svg><use href="#i-full"/></svg><span>全屏</span><kbd>F</kbd></button>
+            <button data-key="escape" data-control="keyboard" disabled><svg><use href="#i-escape"/></svg><span>退出</span><kbd>Esc</kbd></button>
+          </div>
+        </section>
+
+        <div class="side-panels">
+          <section class="panel volume-panel" aria-label="系统音量">
+            <div class="volume-header"><h2>音量</h2><output id="volume-value" for="volume-slider">—<span>%</span></output></div>
+            <div class="slider-row"><svg class="slider-icon"><use href="#i-volume"/></svg><input id="volume-slider" type="range" min="0" max="100" value="0" aria-label="系统音量" disabled><svg class="slider-icon slider-loud"><use href="#i-volume"/></svg></div>
+            <div class="volume-actions"><button id="volume-down" data-control="volume" disabled>− 10%</button><button id="mute-button" data-control="mute" disabled><svg><use id="mute-icon" href="#i-mute"/></svg><span id="mute-label">静音</span></button><button id="volume-up" data-control="volume" disabled>+ 10%</button></div>
+            <p class="volume-note" id="volume-note" hidden>此设备不支持系统音量调节</p>
+          </section>
+
+          <section class="panel notification-panel" aria-label="通知管理">
+            <button id="clear-notifications" class="clear-button" data-control="keyboard" disabled><span><svg><use href="#i-bell"/></svg><span id="clear-label">清除通知</span></span><svg><use href="#i-arrow"/></svg></button>
+          </section>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <div class="pairing-overlay" id="pairing-overlay" hidden>
+    <section class="pairing-dialog" role="dialog" aria-modal="true" aria-labelledby="pairing-title">
+      <span class="pairing-mark"><svg><use href="#i-remote"/></svg></span>
+      <h2 id="pairing-title">连接 Mac</h2><p id="pairing-message">输入菜单栏中的配对码，或扫描二维码。</p>
+      <form id="pairing-form"><label for="pairing-token">配对码或连接地址</label><input id="pairing-token" type="text" inputmode="numeric" placeholder="6 位数字配对码" autocomplete="one-time-code" autocapitalize="off" spellcheck="false" required><button type="submit" id="pairing-submit">连接<svg><use href="#i-links"/></svg></button></form>
+    </section>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

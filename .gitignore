@@ -1,0 +1,17 @@
+.build/
+.swiftpm/
+dist/
+.DS_Store
+*.xcuserstate
+.signing/
+*.p12
+*.keychain-db
+__pycache__/
+*.pyc
+*.pem
+*.key
+certificate.base64
+password.txt
+.env
+.env.*
+!.env.example

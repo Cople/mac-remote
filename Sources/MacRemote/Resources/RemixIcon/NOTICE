@@ -1,0 +1,6 @@
+Remix Icon 4.6.0
+Copyright (c) 2024 Remix Design
+https://github.com/Remix-Design/RemixIcon/tree/v4.6.0
+Licensed under the Apache License, Version 2.0 (see License).
+
+Modifications: selected SVG paths combined into an inline web sprite; selected font codepoints extracted into glyphs.json. Icons are rendered at application-specific sizes and colors.

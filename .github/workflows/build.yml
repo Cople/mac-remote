@@ -1,0 +1,121 @@
+name: macOS 打包
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: 运行测试
+        run: bash Scripts/test.sh
+
+      - name: 从标签设置版本
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if [[ "$RELEASE_TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(-[0-9A-Za-z][0-9A-Za-z.-]*)?$ ]]; then
+            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${BASH_REMATCH[1]}" Resources/Info.plist
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $GITHUB_RUN_NUMBER" Resources/Info.plist
+          else
+            echo "标签格式应为 v1.2.3 或 v1.2.3-beta.1" >&2
+            exit 1
+          fi
+
+      - name: 读取固定签名证书
+        if: github.event_name != 'pull_request'
+        env:
+          MAC_REMOTE_SIGNING_CERTIFICATE: ${{ secrets.MAC_REMOTE_SIGNING_CERTIFICATE }}
+          MAC_REMOTE_SIGNING_PASSWORD: ${{ secrets.MAC_REMOTE_SIGNING_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import os
+          from pathlib import Path
+
+          certificate = os.environ.get("MAC_REMOTE_SIGNING_CERTIFICATE", "")
+          if not certificate or not os.environ.get("MAC_REMOTE_SIGNING_PASSWORD"):
+              raise SystemExit("请先配置 MAC_REMOTE_SIGNING_CERTIFICATE 和 MAC_REMOTE_SIGNING_PASSWORD 两个 Actions Secrets，见 docs/signing.md")
+          os.umask(0o077)
+          path = Path(os.environ["RUNNER_TEMP"]) / "mac-remote-signing.p12"
+          path.write_bytes(base64.b64decode(certificate, validate=True))
+          with open(os.environ["GITHUB_ENV"], "a") as output:
+              output.write(f"MAC_REMOTE_SIGNING_P12={path}\n")
+          PY
+
+      - name: 构建通用应用
+        env:
+          # Untrusted PRs get preview builds without access to signing secrets.
+          CODE_SIGN_IDENTITY: ${{ github.event_name == 'pull_request' && '-' || '' }}
+          MAC_REMOTE_SIGNING_PASSWORD: ${{ github.event_name != 'pull_request' && secrets.MAC_REMOTE_SIGNING_PASSWORD || '' }}
+        run: bash Scripts/build.sh --universal
+
+      - name: 验证并打包
+        run: |
+          lipo "dist/Mac Remote.app/Contents/MacOS/MacRemote" -verify_arch arm64 x86_64
+          codesign --verify --deep --strict "dist/Mac Remote.app"
+          swift Scripts/verify-bundle.swift "dist/Mac Remote.app"
+          cd dist
+          ditto -c -k --sequesterRsrc --keepParent "Mac Remote.app" MacRemote-universal.zip
+          shasum -a 256 MacRemote-universal.zip > SHA256SUMS.txt
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ github.event_name == 'pull_request' && 'MacRemote-universal-preview' || 'MacRemote-universal' }}
+          path: |
+            dist/MacRemote-universal.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: 清理签名资料
+        if: always() && github.event_name != 'pull_request'
+        run: rm -f "$RUNNER_TEMP/mac-remote-signing.p12"
+
+  release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: MacRemote-universal
+          path: dist
+
+      - name: 发布 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" dist/MacRemote-universal.zip dist/SHA256SUMS.txt --clobber
+          else
+            release_flags=()
+            if [[ "$RELEASE_TAG" == *-* ]]; then
+              release_flags+=(--prerelease)
+            fi
+            gh release create "$RELEASE_TAG" dist/MacRemote-universal.zip dist/SHA256SUMS.txt \
+              --verify-tag --title "$RELEASE_TAG" --generate-notes "${release_flags[@]}"
+          fi
