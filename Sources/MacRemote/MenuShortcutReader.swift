@@ -14,6 +14,7 @@ import MacRemoteCore
     struct Snapshot: Encodable {
         let application: String
         let bundleIdentifier: String?
+        let windowTitle: String?
         let fullScreenButtonAvailable: Bool
         let zoomButtonAvailable: Bool
         let fullScreen: Bool?
@@ -29,6 +30,24 @@ import MacRemoteCore
     private static func element(_ parent: AXUIElement, _ name: CFString) -> AXUIElement? {
         guard let result = value(parent, name), CFGetTypeID(result) == AXUIElementGetTypeID() else { return nil }
         return unsafeBitCast(result, to: AXUIElement.self)
+    }
+
+    private static func focusedWindow(_ application: AXUIElement) -> AXUIElement? {
+        element(application, kAXFocusedWindowAttribute as CFString)
+            ?? element(application, kAXMainWindowAttribute as CFString)
+    }
+
+    private static func title(of window: AXUIElement?) -> String? {
+        guard let window, let title = value(window, kAXTitleAttribute as CFString) as? String else { return nil }
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    static func windowTitle(for running: NSRunningApplication?) -> String? {
+        guard AXIsProcessTrusted(), let running else { return nil }
+        let application = AXUIElementCreateApplication(running.processIdentifier)
+        AXUIElementSetMessagingTimeout(application, 0.2)
+        return title(of: focusedWindow(application))
     }
 
     static func snapshot() throws -> Snapshot {
@@ -61,8 +80,9 @@ import MacRemoteCore
             }
         }
         walk(menu, path: [], depth: 0)
-        let window = element(application, kAXFocusedWindowAttribute as CFString)
+        let window = focusedWindow(application)
         return Snapshot(application: running.localizedName ?? "未知应用", bundleIdentifier: running.bundleIdentifier,
+                        windowTitle: title(of: window),
                         fullScreenButtonAvailable: window.flatMap { element($0, kAXFullScreenButtonAttribute as CFString) } != nil,
                         zoomButtonAvailable: window.flatMap { element($0, kAXZoomButtonAttribute as CFString) } != nil,
                         fullScreen: window.flatMap { value($0, "AXFullScreen" as CFString) as? Bool },

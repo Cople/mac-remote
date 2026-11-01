@@ -72,8 +72,12 @@ function applyState(next) {
   state = next;
   paired = true;
   $('pairing-overlay').hidden = true;
-  $('device-name').textContent = next.name || 'Mac';
-  $('frontmost-app').textContent = next.frontmostApp ? `当前应用 · ${next.frontmostApp}` : '—';
+  $('frontmost-app').textContent = next.frontmostApp || '—';
+  const windowTitle = typeof next.frontmostWindowTitle === 'string' ? next.frontmostWindowTitle.trim() : '';
+  const title = $('frontmost-window-title');
+  title.textContent = windowTitle;
+  title.title = windowTitle;
+  title.hidden = !windowTitle;
   for (const [key, fallback] of Object.entries({previous: '[', next: ']', fullscreen: 'F'})) {
     document.querySelector(`[data-key="${key}"] kbd`).textContent = next.shortcutLabels?.[key] || fallback;
   }

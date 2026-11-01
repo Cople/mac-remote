@@ -42,7 +42,8 @@ import MacRemoteCore
                            accessibility: AXIsProcessTrusted(), volume: snapshot.volume, muted: snapshot.muted,
                            volumeControllable: snapshot.controllable, frontmostApp: app?.localizedName ?? "Mac",
                            holding: lease.owner != nil, frontmostAppIcon: appIcon(for: app),
-                           shortcutLabels: RemoteKey.shortcutLabels(forApp: app?.bundleIdentifier))
+                           shortcutLabels: RemoteKey.shortcutLabels(forApp: app?.bundleIdentifier),
+                           frontmostWindowTitle: MenuShortcutReader.windowTitle(for: app))
     }
 
     private var currentTarget: NSRunningApplication? {
@@ -166,7 +167,9 @@ import MacRemoteCore
         guard let event = CGEvent(keyboardEventSource: source, virtualKey: shortcut.keyCode, keyDown: down) else {
             throw RemoteError("无法创建键盘事件", status: 503)
         }
-        event.flags = shortcut.modifiers
+        let pressedShiftKey: CGKeyCode? = CGEventSource.keyState(.combinedSessionState, key: 56) ? 56
+            : (CGEventSource.keyState(.combinedSessionState, key: 60) ? 60 : nil)
+        event.flags = shortcut.eventFlags(pressedShiftKey: pressedShiftKey)
         event.setIntegerValueField(.keyboardEventAutorepeat, value: repeatEvent ? 1 : 0)
         event.post(tap: .cghidEventTap)
     }

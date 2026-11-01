@@ -80,13 +80,15 @@ public struct RemoteState: Codable {
     public var volumeControllable: Bool
     public var frontmostApp: String
     public var frontmostAppIcon: String?
+    public var frontmostWindowTitle: String?
     public var holding: Bool
     public var message: String?
     public var shortcutLabels: [String: String]
 
     public init(name: String, version: String, accessibility: Bool, volume: Double?, muted: Bool?,
                 volumeControllable: Bool, frontmostApp: String, holding: Bool,
-                frontmostAppIcon: String? = nil, message: String? = nil, shortcutLabels: [String: String] = [:]) {
+                frontmostAppIcon: String? = nil, message: String? = nil, shortcutLabels: [String: String] = [:],
+                frontmostWindowTitle: String? = nil) {
         self.name = name
         self.version = version
         self.accessibility = accessibility
@@ -95,6 +97,7 @@ public struct RemoteState: Codable {
         self.volumeControllable = volumeControllable
         self.frontmostApp = frontmostApp
         self.frontmostAppIcon = frontmostAppIcon
+        self.frontmostWindowTitle = frontmostWindowTitle
         self.holding = holding
         self.message = message
         self.shortcutLabels = shortcutLabels

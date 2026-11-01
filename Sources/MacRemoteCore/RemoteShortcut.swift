@@ -1,9 +1,20 @@
 import CoreGraphics
+import IOKit.hidsystem
 
 public struct RemoteShortcut: Equatable {
     public let keyCode: UInt16
     public let modifiers: CGEventFlags
     public let label: String
+
+    public func eventFlags(pressedShiftKey: CGKeyCode? = nil) -> CGEventFlags {
+        var flags = modifiers
+        if modifiers.contains(.maskShift) {
+            // Flutter tracks the sided modifier bits, not just maskShift.
+            let side = pressedShiftKey == 60 ? NX_DEVICERSHIFTKEYMASK : NX_DEVICELSHIFTKEYMASK
+            flags.insert(CGEventFlags(rawValue: UInt64(side)))
+        }
+        return flags
+    }
 }
 
 extension RemoteKey {
@@ -22,6 +33,14 @@ extension RemoteKey {
             }
             if self == .next {
                 return RemoteShortcut(keyCode: 124, modifiers: .maskAlternate, label: "⌥ →")
+            }
+        }
+        if bundleIdentifier == "com.quark.clouddrive.desktop.helper.player" {
+            if self == .previous {
+                return RemoteShortcut(keyCode: 123, modifiers: .maskShift, label: "⇧ ←")
+            }
+            if self == .next {
+                return RemoteShortcut(keyCode: 124, modifiers: .maskShift, label: "⇧ →")
             }
         }
         let labels = ["space": "Space", "right": "→", "left": "←", "up": "↑", "down": "↓",

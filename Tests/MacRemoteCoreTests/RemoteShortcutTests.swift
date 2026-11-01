@@ -21,8 +21,32 @@ final class RemoteShortcutTests: XCTestCase {
         XCTAssertEqual(RemoteKey.shortcutLabels(forApp: "com.youku.mac"), ["previous": "⌥ ←", "next": "⌥ →", "fullscreen": "F"])
     }
 
+    func testQuarkPlayerEpisodeShortcuts() {
+        let bundle = "com.quark.clouddrive.desktop.helper.player"
+        XCTAssertEqual(RemoteKey.previous.shortcut(forApp: bundle).keyCode, 123)
+        XCTAssertEqual(RemoteKey.next.shortcut(forApp: bundle).keyCode, 124)
+        XCTAssertEqual(RemoteKey.previous.shortcut(forApp: bundle).modifiers, .maskShift)
+        XCTAssertEqual(RemoteKey.next.shortcut(forApp: bundle).modifiers, .maskShift)
+        XCTAssertEqual(RemoteKey.fullscreen.shortcut(forApp: bundle).modifiers, [])
+        XCTAssertEqual(RemoteKey.shortcutLabels(forApp: bundle), ["previous": "⇧ ←", "next": "⇧ →", "fullscreen": "F"])
+    }
+
+    func testShiftArrowIncludesSidedModifierFlags() {
+        let shortcut = RemoteKey.next.shortcut(forApp: "com.quark.clouddrive.desktop.helper.player")
+        let leftShift = CGEventFlags(rawValue: CGEventFlags.maskShift.rawValue | 0x2)
+        XCTAssertEqual(shortcut.eventFlags(), leftShift)
+        XCTAssertEqual(shortcut.eventFlags(pressedShiftKey: 56), leftShift)
+        XCTAssertEqual(shortcut.eventFlags(pressedShiftKey: 60), CGEventFlags(rawValue: CGEventFlags.maskShift.rawValue | 0x4))
+        for bundle in [nil, "com.youku.mac", "com.iqiyi.player", "com.tencent.tenvideo"] as [String?] {
+            for key in [RemoteKey.right, .next, .fullscreen] {
+                let other = key.shortcut(forApp: bundle)
+                XCTAssertEqual(other.eventFlags(), other.modifiers)
+            }
+        }
+    }
+
     func testOtherCommandsKeepTheirOriginalKeyCodesAndModifiers() {
-        for bundle in [nil, "com.apple.Safari", "com.tencent.tenvideo", "com.iqiyi.player", "com.youku.mac"] as [String?] {
+        for bundle in [nil, "com.apple.Safari", "com.tencent.tenvideo", "com.iqiyi.player", "com.youku.mac", "com.quark.clouddrive.desktop.helper.player"] as [String?] {
             for key in [RemoteKey.space, .right, .left, .up, .down, .escape, .danmaku] {
                 let shortcut = key.shortcut(forApp: bundle)
                 XCTAssertEqual(shortcut.keyCode, key.keyCode)
