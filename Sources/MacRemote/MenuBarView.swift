@@ -2,6 +2,7 @@ import SwiftUI
 
 @MainActor struct MenuBarView: View {
     @ObservedObject var model: AppModel
+    @Environment(\.dismiss) private var dismiss
     private let accent = Color(red: 0.87, green: 0.31, blue: 0.16)
     private let connectedColor = Color(red: 40.0 / 255, green: 205.0 / 255, blue: 65.0 / 255)
 
@@ -125,7 +126,72 @@ import SwiftUI
             .padding(.horizontal, 12).padding(.vertical, 6)
         }
         .frame(width: 300)
-        .background(.regularMaterial)
+        .background(MenuBarWindowObserver { dismiss() })
+        .onAppear {
+            let dismiss = dismiss
+            model.controller.beforeKeyboardInput = { dismiss() }
+        }
+    }
+}
+
+private struct MenuBarWindowObserver: NSViewRepresentable {
+    let onResignKey: () -> Void
+
+    func makeNSView(context: Context) -> ObserverView { ObserverView(onResignKey: onResignKey) }
+    func updateNSView(_ view: ObserverView, context: Context) { view.onResignKey = onResignKey }
+
+    final class ObserverView: NSView {
+        var onResignKey: () -> Void
+        private var observers: [NSObjectProtocol] = []
+
+        init(onResignKey: @escaping () -> Void) {
+            self.onResignKey = onResignKey
+            super.init(frame: .zero)
+        }
+
+        required init?(coder: NSCoder) { nil }
+
+        override func viewDidMoveToWindow() {
+            for observer in observers { NotificationCenter.default.removeObserver(observer) }
+            observers.removeAll()
+            guard let window else { return }
+            window.animationBehavior = .utilityWindow
+            observers.append(NotificationCenter.default.addObserver(
+                forName: NSWindow.didResignKeyNotification, object: window, queue: .main
+            ) { [weak self] _ in self?.onResignKey() })
+            observers.append(NotificationCenter.default.addObserver(
+                forName: NSWindow.didBecomeKeyNotification, object: window, queue: .main
+            ) { [weak self] _ in self?.centerUnderStatusItem() })
+            observers.append(NotificationCenter.default.addObserver(
+                forName: NSWindow.didMoveNotification, object: window, queue: .main
+            ) { [weak self] _ in self?.centerUnderStatusItem() })
+            centerUnderStatusItem()
+        }
+
+        override func viewWillDraw() {
+            centerUnderStatusItem()
+            super.viewWillDraw()
+        }
+
+        private func centerUnderStatusItem() {
+            func findButton(in view: NSView) -> NSStatusBarButton? {
+                if let button = view as? NSStatusBarButton { return button }
+                return view.subviews.lazy.compactMap { findButton(in: $0) }.first
+            }
+            guard let window,
+                  let button = NSApp.windows.compactMap({ $0.contentView.flatMap { findButton(in: $0) } }).first,
+                  let statusWindow = button.window, let screen = statusWindow.screen else { return }
+            let anchor = statusWindow.convertToScreen(button.convert(button.bounds, to: nil))
+            let bounds = screen.visibleFrame.insetBy(dx: 8, dy: 0)
+            let x = min(max(anchor.midX - window.frame.width / 2, bounds.minX), bounds.maxX - window.frame.width)
+            if abs(window.frame.minX - x) > 0.5 {
+                window.setFrameOrigin(NSPoint(x: x, y: window.frame.minY))
+            }
+        }
+
+        deinit {
+            for observer in observers { NotificationCenter.default.removeObserver(observer) }
+        }
     }
 }
 

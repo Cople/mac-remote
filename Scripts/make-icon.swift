@@ -11,7 +11,7 @@ var glyph = CGGlyph()
 precondition(CTFontGetGlyphsForCharacters(font, &character, &glyph, 1))
 let glyphPath = CTFontCreatePathForGlyph(font, glyph, nil)!
 
-func render(size: Int, fullBleed: Bool = false) -> Data {
+func render(size: Int, fullBleed: Bool = false, glyphScale: CGFloat = 1) -> Data {
     // Explicit pixels avoid Retina's implicit 2× scaling in NSImage.lockFocus().
     let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: size, pixelsHigh: size,
                                   bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
@@ -29,7 +29,8 @@ func render(size: Int, fullBleed: Bool = false) -> Data {
     // Font line bounds include side bearings; center the actual outline instead.
     let bounds = glyphPath.boundingBoxOfPath
     let context = NSGraphicsContext.current!.cgContext
-    context.translateBy(x: 512 - bounds.midX, y: 512 - bounds.midY)
+    context.translateBy(x: 512 - bounds.midX * glyphScale, y: 512 - bounds.midY * glyphScale)
+    context.scaleBy(x: glyphScale, y: glyphScale)
     context.setFillColor(NSColor(srgbRed: 1, green: 0.97, blue: 0.90, alpha: 1).cgColor)
     context.addPath(glyphPath)
     context.fillPath()
@@ -40,10 +41,12 @@ func render(size: Int, fullBleed: Bool = false) -> Data {
 if CommandLine.arguments.dropFirst().first == "--web" {
     let directory = project.appendingPathComponent("Sources/MacRemote/Web/icons")
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    // Android launchers can enlarge shortcut icons. Keep one opaque composition
+    // with extra foreground padding for the Android icon sources.
     for size in [192, 512] {
-        try render(size: size).write(to: directory.appendingPathComponent("icon-\(size).png"))
+        try render(size: size, fullBleed: true, glyphScale: 0.8).write(to: directory.appendingPathComponent("icon-\(size).png"))
     }
-    try render(size: 512, fullBleed: true).write(to: directory.appendingPathComponent("icon-maskable-512.png"))
+    try render(size: 512, fullBleed: true, glyphScale: 0.8).write(to: directory.appendingPathComponent("icon-maskable-512.png"))
     try render(size: 180, fullBleed: true).write(to: directory.appendingPathComponent("apple-touch-icon.png"))
     exit(0)
 }
